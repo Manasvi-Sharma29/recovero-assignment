@@ -1,6 +1,11 @@
 const mongoose = require('mongoose')
-
+const objectId = mongoose.Schema.Types.ObjectId
 const userSchema = mongoose.Schema({
+    title:{
+        type:String,
+        required:true,
+        enum:["Mr","Miss","Mrs"]
+    },
     name:{
         type:String,
         required:true
@@ -33,6 +38,9 @@ const userSchema = mongoose.Schema({
     isDeleted:{
         type:Boolean,
         default:false
+    },
+    createdBy:{
+        type:objectId
     }
 },{timestamps:true})
 

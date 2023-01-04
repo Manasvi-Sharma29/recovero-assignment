@@ -28,13 +28,14 @@ const authorization = async function(req,res,next){
         let userId = req.params.admin
         const admin = await userModel.findById(userId)
         if(!admin){
-            return res.status(404).send({ status: false, message:"user not found" });
+            return res.status(404).send({ status: false, message:"admin not found" });
         }
         if(userId !== req.token.userId || req.token.role !== "admin"){
             return res
               .status(403)
               .send({status: false, message:"You are not authorized to perform this task"})
         }
+        req.user = admin._id
         next()
     }catch(error){
         return res.status(500).send({ status: false, Error: error.message });

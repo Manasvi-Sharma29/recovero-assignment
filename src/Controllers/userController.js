@@ -5,8 +5,19 @@ const {isValidEmail,isValidName,isValidPassword,isValidPhone } = require("../val
 
 const createUser = async function (req, res) {
   try {
-    let { name, email, password, role, phone } = req.body;
+    let {title, name, email, password, role, phone } = req.body;
     let obj = {};
+    if(!title){
+      return res
+        .status(400)
+        .send({ status: false, message: "title is a required field" });
+    }
+    if(!["Mr","Mrs","Miss"].includes(title)){
+      return res
+        .status(400)
+        .send({ status: false, message: "enter valid title" });
+    }
+    obj["title"] = title
     if(!["admin","member"].includes(role)){
       role = "member"
     }
@@ -71,8 +82,9 @@ const createUser = async function (req, res) {
         .send({ status: false, message: "Enter valid phone number" });
     }
     obj["phone"] = phone;
+    obj["createdBy"] = req.user
     await userModel.create(obj);
-    let result = await userModel.find({role:"member",isDeleted:false})
+    let result = await userModel.find({role:"member",isDeleted:false, createdBy:req.user})
     for(i=0; i<result.length; i++){
 
       delete result[i]._doc.codedPassword
@@ -87,21 +99,91 @@ const createUser = async function (req, res) {
   }
 };
 
-const adminCreation = async function (req, res) {
+const createAdmin = async function (req, res) {
   try {
-    let adminObj = {
-      name: "Robert William",
-      email: "robertwilliam@gmail.com",
-      password: "roblliam34&@%",
-      role: "admin",
-      phone: "7865431290",
-      codedPassword: "",
-    };
-    adminObj.codedPassword = await bcrypt.hash(adminObj.password, 10);
-    let admin = await userModel.create(adminObj);
-    console.log(admin);
+    let { title,name, email, password, role, phone } = req.body;
+    let obj = {};
+    if(!title){
+      return res
+        .status(400)
+        .send({ status: false, message: "title is a required field" });
+    }
+    if(!["Mr","Mrs","Miss"].includes(title)){
+      return res
+        .status(400)
+        .send({ status: false, message: "enter valid title" });
+    }
+    obj["title"] = title
+    if(!["admin","member"].includes(role)){
+      role = "admin"
+    }
+    if (!name) {
+      return res
+        .status(400)
+        .send({ status: false, message: "name is a required field" });
+    }
+    if (!isValidName(name)) {
+      return res
+        .status(400)
+        .send({ status: false, message: "Enter valid name" });
+    }
+    obj["name"] = name;
+    const isDuplicate = await userModel.findOne({$or:[{email:email},{phone:phone}]})
+    if(isDuplicate){
+      return res
+              .status(409)
+              .send({status: false, message:"email or phone already in use"})
+    }
+    if (!email) {
+      return res
+        .status(400)
+        .send({ status: false, message: "email is a required field" });
+    }
+    if (!isValidEmail(email)) {
+      return res
+        .status(400)
+        .send({ status: false, message: "Enter valid mail" });
+    }
+    obj["email"] = email;
+    if (!password) {
+      return res
+        .status(400)
+        .send({ status: false, message: "password is required field" });
+    }
+    if (!isValidPassword(password)) {
+      return res
+        .status(400)
+        .send({ status: false, message: "Enter valid password" });
+    }
+    obj["password"] = password;
+    const encryptPassword = await bcrypt.hash(password, 10);
+    obj["codedPassword"] = encryptPassword;
+    if (!role) {
+      return res
+        .status(400)
+        .send({ status: false, message: "role is required" });
+    }
+    obj["role"] = role;
+    if (!phone) {
+      return res
+        .status(400)
+        .send({ status: false, message: "phone number is required" });
+    }
+    if (!isValidPhone(phone)) {
+      return res
+        .status(400)
+        .send({ status: false, message: "Enter valid phone number" });
+    }
+    obj["phone"] = phone;
+    let result = await userModel.create(obj);
+    delete result._doc.codedPassword
+    return res.status(201).send({
+      status: true,
+      message: "User Creation Successful",
+      data: result,
+    });
   } catch (error) {
-    return res.status(500).send({ status: false, Error: error.message });
+    return res.status(500).send({ Error: error.message });
   }
 };
 
@@ -171,4 +253,4 @@ const deleteUser = async function(req,res){
 
 }
 
-module.exports = { createUser, login, adminCreation, deleteUser };
+module.exports = { createUser, login, createAdmin, deleteUser };

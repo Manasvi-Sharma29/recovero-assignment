@@ -2,11 +2,11 @@ const mongoose = require('mongoose')
 const express = require('express')
 const route = require('./Routes/route')
 const cors = require('cors')
-const {adminCreation} = require('./Controllers/userController')
+
 const app = express()
 app.use(express.json())
 app.use(cors()) 
-let flag = true
+
 mongoose.connect(
     "mongodb+srv://Manasvi29:bharat2909@cluster0.r7a9dpa.mongodb.net/order-management?retryWrites=true&w=majority",
     {
@@ -14,9 +14,6 @@ mongoose.connect(
     }
 )
 .then(()=>{
-    if(flag == true){
-        adminCreation()
-    }
     console.log("MongoDB Connected")
 })
 .catch((error)=>console.log(error))
@@ -33,6 +30,6 @@ flag = false
 
 app.use('/',route)
 
-app.listen(process.env.PORT||3000, function(){
-    console.log("Express app running on port " + (process.env.PORT || 3000))
+app.listen(process.env.PORT||5000, function(){
+    console.log("Express app running on port " + (process.env.PORT || 5000))
 })
