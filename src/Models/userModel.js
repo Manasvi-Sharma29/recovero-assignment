@@ -1,5 +1,5 @@
 const mongoose = require('mongoose')
-const objectId = mongoose.Schema.Types.ObjectId
+// const objectId = mongoose.Schema.Types.ObjectId
 const userSchema = mongoose.Schema({
     title:{
         type:String,
@@ -40,7 +40,7 @@ const userSchema = mongoose.Schema({
         default:false
     },
     createdBy:{
-        type:objectId
+        type:String
     }
 },{timestamps:true})
 

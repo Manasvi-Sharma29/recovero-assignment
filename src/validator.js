@@ -1,3 +1,11 @@
+
+const isValidRequest = function(data){
+    if(Object.keys(data).length == 0){
+      return false
+    }
+    return true
+  }
+
 const isValidName = function(name){
     return /^[a-z A-Z]+$/.test(name)
 } 
@@ -14,4 +22,4 @@ const isValidPhone = function(phone){
     return /^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{8,15}$/.test(pass);
   };
 
-  module.exports = {isValidEmail,isValidName,isValidPassword,isValidPhone}
+  module.exports = {isValidEmail,isValidName,isValidPassword,isValidPhone,isValidRequest}

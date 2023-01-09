@@ -3,13 +3,15 @@ const userModel = require("../Models/userModel");
 
 const authentication = async function (req, res, next) {
   try {
-    let token = req.headers.authorization || req.headers.Authorization;
+    let token = req.headers['authorization'];
+    // let token = localStorage.getItem("token")
+    // console.log(token)
     if(!token){
         return res
-              .status(401)
+              .status(300)
               .send({status: false, message:"you're not logged in"})
     }
-    token = token.split(" ")[1];
+    // token = token.split('"')[1]
     jwt.verify(token, "order-management/we45@#%",function (err, decoded) {
       if (err)
         return res.status(401).send({ status: false, message: err.message });
@@ -19,6 +21,7 @@ const authentication = async function (req, res, next) {
       }
     });
   } catch (error) {
+    console.log(error)
     return res.status(500).send({ status: false, Error: error.message });
   }
 };
@@ -35,7 +38,7 @@ const authorization = async function(req,res,next){
               .status(403)
               .send({status: false, message:"You are not authorized to perform this task"})
         }
-        req.user = admin._id
+        req.user = admin
         next()
     }catch(error){
         return res.status(500).send({ status: false, Error: error.message });
