@@ -17,16 +17,8 @@ mongoose.connect(
     console.log("MongoDB Connected")
 })
 .catch((error)=>console.log(error))
-flag = false
 
-// mongoose.connection.once(
-//     "open",
-//     ()=>{
-//         if(flag == true){
-//             adminCreation()
-//         }
-//     }
-// ).on("error",(err)=>{})
+
 
 app.use('/',route)
 
